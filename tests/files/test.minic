@@ -1,0 +1,12 @@
+int returnTheSameInt(int x);
+int y = x + 5;
+int main() {
+    int x = 10;
+    x = returnTheSameInt(x);
+    return 0;
+}
+
+int returnTheSameInt(int x)
+{
+    return x;
+}

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="src\CodeGen\" />
+      <Folder Include="src\IR\" />
+      <Folder Include="src\Runtime\" />
+      <Folder Include="src\Semantic\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="tests\files\test.minic">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Remove="ST.gif" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="bin\Debug\net8.0\ST.gif" />
+      <Content Include="bin\Debug\net8.0\test.dot" />
+    </ItemGroup>
+
+</Project>
