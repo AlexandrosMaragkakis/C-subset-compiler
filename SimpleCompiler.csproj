@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="src\CodeGen\" />
       <Folder Include="src\IR\" />
       <Folder Include="src\Runtime\" />
       <Folder Include="src\Semantic\" />
@@ -27,8 +26,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="bin\Debug\net8.0\AST.gif" />
+      <Content Include="bin\Debug\net8.0\output.asm" />
       <Content Include="bin\Debug\net8.0\ST.gif" />
       <Content Include="bin\Debug\net8.0\test.dot" />
+      <Content Include="bin\Debug\net8.0\test_ast.dot" />
     </ItemGroup>
 
 </Project>

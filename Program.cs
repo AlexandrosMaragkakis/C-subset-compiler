@@ -1,6 +1,9 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System.Diagnostics;
+using System.IO;
+using SimpleCompiler.Ast;
+using SimpleCompiler.CodeGen;
 
 namespace SimpleCompiler
 {
@@ -8,33 +11,45 @@ namespace SimpleCompiler
     {
         public static void Main(string[] args)
         {
-            // deprecated (but still works)
-            //    var inputStream = new StreamReader(fileName);
-            //    var antlrStream = new AntlrInputStream(inputStream);
-
-            // fileName = args[0]
+            // Use your test file.
             const string fileName = "tests/files/test.minic";
             Test(fileName);
-            
         }
     
         private static void Test(string fileName)
         {
-            //var stack = new Stack<string>();
-            
             var antlrStream = CharStreams.fromPath(fileName);
             var lexer = new MINICLexer(antlrStream);
             var tokens = new CommonTokenStream(lexer);
             var parser = new MINICParser(tokens);
-            
-            // CompileUnitContext or IParseTree, works with both.
             var tree = parser.compileUnit();
-            
-            // Console.WriteLine(tree.ToStringTree(parser));
 
+            // Print parse tree structure.
             var stPrinter = new STPrinterVisitor();
             stPrinter.Visit(tree);
             RunCommand("dot -Tgif test.dot -o ST.gif");
+
+            // Build the AST.
+            var astVisitor = new ASTGenerator();
+            astVisitor.Visit(tree);
+            CCompileUnit root = astVisitor.GetRoot();
+            var astPrinter = new ASTPrinterVisitor();
+            astPrinter.PrintAst(root);
+            RunCommand("dot -Tgif test_ast.dot -o AST.gif");
+            
+            // Code generation
+            var codeGenVisitor = new CodeGenVisitor();
+            root.Accept(codeGenVisitor);
+            AsmFile asmFile = codeGenVisitor.GetAsmFile();
+
+            // Emit assembly code to a file.
+            using (StreamWriter sw = new StreamWriter("output.asm"))
+            {
+                asmFile.EmitToFile(sw);
+            }
+            Console.WriteLine("Assembly code generated in output.asm");
+
+            
         }
         
         static void RunCommand(string command)
@@ -42,16 +57,14 @@ namespace SimpleCompiler
             try
             {
                 Process process = new Process();
-                process.StartInfo.FileName = "cmd.exe"; // For Windows
+                process.StartInfo.FileName = "cmd.exe";
                 process.StartInfo.Arguments = $"/c {command}";
                 process.StartInfo.RedirectStandardOutput = false;
                 process.StartInfo.RedirectStandardError = false;
                 process.StartInfo.UseShellExecute = true;
                 process.StartInfo.CreateNoWindow = true;
-
                 process.Start();
                 process.WaitForExit();
-
                 Console.WriteLine($"Command '{command}' executed successfully.");
             }
             catch (Exception ex)
@@ -60,6 +73,4 @@ namespace SimpleCompiler
             }
         }
     }
-
-
 }
