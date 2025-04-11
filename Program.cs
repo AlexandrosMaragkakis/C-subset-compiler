@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using System.Diagnostics;
 using System.IO;
+using SimpleCompiler.Analysis;
 using SimpleCompiler.Ast;
 using SimpleCompiler.CodeGen;
 
@@ -36,6 +37,15 @@ namespace SimpleCompiler
             var astPrinter = new ASTPrinterVisitor();
             astPrinter.PrintAst(root);
             RunCommand("dot -Tgif test_ast.dot -o AST.gif");
+            
+            // === New Logical Analysis Pass ===
+            // Analyze the AST for logical errors using the local LLM.
+            //var analyzer = new LogicalAnalyzer();
+            // Since AnalyzeAsync is asynchronous, call it synchronously here.
+            //analyzer.AnalyzeAsync(root).GetAwaiter().GetResult();
+            // ===================================
+            var bugAnalyzer = new BugDetectionAnalyzer();
+            bugAnalyzer.AnalyzeSourceAsync("tests/files/test.minic").GetAwaiter().GetResult();
             
             // Code generation
             var codeGenVisitor = new CodeGenVisitor();
